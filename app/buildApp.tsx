@@ -5,6 +5,7 @@ import { authRoutes } from '../routes/authRoutes'
 import { universalErrorHandler } from '../middleware/errorHandlingMiddleware'
 import type { IDb } from '../types'
 import { validateSessionPreHandler } from '../middleware/authMiddleware'
+import { mediaRoutes } from '../routes/mediaRoutes'
 
 export default async (db: IDb) => {
   const fastify = Fastify({
@@ -18,6 +19,9 @@ export default async (db: IDb) => {
   await fastify.register(cookie)
 
   fastify.register(authRoutes, {
+    prefix: '/media-manager-api',
+  })
+  fastify.register(mediaRoutes, {
     prefix: '/media-manager-api',
   })
 
