@@ -73,19 +73,21 @@ export const verifyCredentials = async (
   email: string,
   password: string,
 ) => {
-  const { rows } = await db.query<IUser>('SELECT FROM users WHERE email = $1', [
-    email,
-  ])
+  const { rows } = await db.query<IUser>(
+    'SELECT * FROM users WHERE email = $1',
+    [email],
+  )
   const user = rows[0]
   if (!user) {
     await verifyPassword(password, await getDummyHash())
     return null
   }
-  return (await verifyPassword(password, user.password_hash)) ? user : null
+
+  return (await verifyPassword(password, user.hashed_password)) ? user : null
 }
 
 export const revokeSession = async (db: IDb, token: string) => {
-  await db.query('DELETE FROM sessions WHERE id = $1', [token])
+  await db.query('DELETE FROM sessions WHERE id = $1', [hashToken(token)])
 }
 
 export const revokeAllSessions = async (db: IDb, userId: string) => {

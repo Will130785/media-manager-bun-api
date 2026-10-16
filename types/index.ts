@@ -14,6 +14,11 @@ export interface IDb {
   ): Promise<{ rows: T[] }>
 }
 
+export interface IAppOptions {
+  logger: boolean
+  origin: string
+}
+
 export type registerUserPayload = z.infer<typeof registerUserSchema>
 export type loginUserPayload = z.infer<typeof loginUserSchema>
 export type musicPayload = z.infer<typeof musicSchema>
@@ -32,7 +37,7 @@ export interface IUser {
   first_name: string
   last_name: string
   email: string
-  password_hash: string
+  hashed_password: string
   created_at: Date
   updated_at: Date
 }

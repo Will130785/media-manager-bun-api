@@ -4,6 +4,7 @@ import { HttpError } from '../utils/errorUtils'
 import {
   createSession,
   hashPassword,
+  revokeSession,
   setSession,
   verifyCredentials,
 } from '../utils/authUtils'
@@ -27,10 +28,10 @@ export const registerUser = async (
     parsedBody.data.email.toLowerCase(),
     await hashPassword(parsedBody.data.password),
   ]
-
+  console.log(values, '***')
   try {
     const { rows } = await request.server.db.query<IUser>(
-      'INSERT INTO users (id, first_name, last_name, email, hashed_password) VALUES ($1, $2, $3, $4, $5)',
+      'INSERT INTO users (id, first_name, last_name, email, hashed_password) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       values,
     )
 
@@ -98,5 +99,10 @@ export const logoutUser = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ) => {
+  const token = request.cookies[process.env.SESSION_COOKIE ?? '']
+  if (!token) {
+    throw new HttpError(400, 'No token')
+  }
+  await revokeSession(request.server.db, token)
   return reply.status(200).send({ success: true })
 }
