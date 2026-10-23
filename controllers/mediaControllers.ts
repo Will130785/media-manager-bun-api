@@ -19,7 +19,7 @@ export const getMusicByUser = async (
   }
 
   const { rows } = await request.server.db.query<IMusic>(
-    'SELECT * FROM music WHERE user_id = $1',
+    "SELECT * FROM music WHERE user_id = $1 ORDER BY REGEXP_REPLACE(artist, '^The ', '', 'i') ASC",
     [user.id],
   )
 
