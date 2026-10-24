@@ -17,10 +17,11 @@ export const getMusicByUser = async (
   if (!user) {
     throw new HttpError(400, 'No user')
   }
+  const { query } = request.body as { query: { artist: string } }
 
   const { rows } = await request.server.db.query<IMusic>(
-    "SELECT * FROM music WHERE user_id = $1 ORDER BY REGEXP_REPLACE(artist, '^The ', '', 'i') ASC",
-    [user.id],
+    "SELECT * FROM music WHERE user_id = $1 AND ($2 = '' OR artist ILIKE $2 || '%') ORDER BY REGEXP_REPLACE(artist, '^The ', '', 'i') ASC",
+    [user.id, query.artist],
   )
 
   return reply.status(200).send(publicMediaItems(rows))
@@ -133,9 +134,11 @@ export const getMovieByUser = async (
     throw new HttpError(400, 'No user')
   }
 
-  const { rows } = await request.server.db.query<IMovie>(
-    'SELECT * FROM movies WHERE user_id = $1',
-    [user.id],
+  const { query } = request.body as { query: { movie: string } }
+
+  const { rows } = await request.server.db.query<IMusic>(
+    "SELECT * FROM movies WHERE user_id = $1 AND ($2 = '' OR title ILIKE $2 || '%') ORDER BY REGEXP_REPLACE(title, '^The ', '', 'i') ASC",
+    [user.id, query.movie],
   )
 
   return reply.status(200).send(publicMediaItems(rows))
@@ -248,9 +251,11 @@ export const getGamesByUser = async (
     throw new HttpError(400, 'No user')
   }
 
-  const { rows } = await request.server.db.query<IGame>(
-    'SELECT * FROM games WHERE user_id = $1',
-    [user.id],
+  const { query } = request.body as { query: { game: string } }
+
+  const { rows } = await request.server.db.query<IMusic>(
+    "SELECT * FROM games WHERE user_id = $1 AND ($2 = '' OR title ILIKE $2 || '%') ORDER BY REGEXP_REPLACE(title, '^The ', '', 'i') ASC",
+    [user.id, query.game],
   )
 
   return reply.status(200).send(publicMediaItems(rows))
@@ -363,9 +368,11 @@ export const getBooksByUser = async (
     throw new HttpError(400, 'No user')
   }
 
-  const { rows } = await request.server.db.query<IBook>(
-    'SELECT * FROM books WHERE user_id = $1',
-    [user.id],
+  const { query } = request.body as { query: { book: string } }
+
+  const { rows } = await request.server.db.query<IMusic>(
+    "SELECT * FROM books WHERE user_id = $1 AND ($2 = '' OR title ILIKE $2 || '%') ORDER BY REGEXP_REPLACE(title, '^The ', '', 'i') ASC",
+    [user.id, query.book],
   )
 
   return reply.status(200).send(publicMediaItems(rows))
