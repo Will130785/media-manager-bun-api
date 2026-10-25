@@ -61,8 +61,8 @@ export const createSession = async (db: IDb, userId: string) => {
 export const setSession = (reply: FastifyReply, token: string) => {
   return reply.setCookie(process.env.SESSION_COOKIE ?? '', token, {
     httpOnly: true,
-    sameSite: 'none',
-    secure: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
     path: '/',
     maxAge: SESSION_TOTAL_MS / 1000,
   })
